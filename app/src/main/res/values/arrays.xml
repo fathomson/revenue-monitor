@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <string-array name="drawer_items">
+        <item>Revenue</item>
+      <!--For future release  <item>Apps</item> -->
+        <item>Settings</item>
+    </string-array>
+
+    <string-array name="timeframe">
+        <item>Today</item>
+        <item>This week</item>
+        <item>This month</item>
+        <item>This year</item>
+        <item>All time</item>
+    </string-array>
+
+
+    <!-- list of supported advertisers -->
+    <string-array name="advertisers">
+        <item>Tapjoy</item>
+    </string-array>
+
+
+    <string-array name="syncFrequency">
+        <item>Every 6 hours</item>
+        <item>Every 12 hours</item>
+        <item>Every day</item>
+        <item>Every week</item>
+        <item>Only at launch of app</item>
+    </string-array>
+    <string-array name="syncFrequencyValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="syncFrequencyMS">
+        <item>21600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
+        <item>604800000</item>
+        <item>0</item>
+    </string-array>
+
+
+
+    <string-array name="default_color_choice_values" translatable="false">
+        <item>#33b5e5</item>
+        <item>#aa66cc</item>
+        <item>#99cc00</item>
+        <item>#ffbb33</item>
+        <item>#ff4444</item>
+        <item>#0099cc</item>
+        <item>#9933cc</item>
+        <item>#669900</item>
+        <item>#ff8800</item>
+        <item>#cc0000</item>
+        <item>#ffffff</item>
+        <item>#eeeeee</item>
+        <item>#cccccc</item>
+        <item>#888888</item>
+    </string-array>
+
+
+</resources>

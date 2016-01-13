@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TransformLayoutWithHeader">
+        <attr name="headerText" format="string" />
+        <attr name="detailsLayout" format="reference" />
+        <attr name="t_duration" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="ColorPreference">
+        <attr name="itemLayout" format="reference" />
+        <attr name="choices" format="reference" />
+        <attr name="numColumns" format="integer" />
+    </declare-styleable>
+</resources>

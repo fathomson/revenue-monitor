@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <PreferenceCategory android:title="@string/general_settings">
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/advertiser_settings">
+
+        <PreferenceScreen
+            android:key="@string/admob"
+            android:title="@string/admob">
+
+            <PreferenceCategory android:title="@string/admob_api_settings">
+
+                <Preference
+                    android:key="@string/admob_start_date_key"
+                    android:summary="@string/start_date_blank"
+                    android:title="@string/start_date" />
+
+                <Preference
+                    android:key="@string/admob_email_key"
+                    android:summary="@string/admob_email_summary"
+                    android:title="@string/admob_email" />
+                <Preference
+                    android:key="@string/admob_account_id_key"
+                    android:summary="@string/admob_account_id_summary"
+                    android:title="@string/admob_account_id" />
+
+                <sa.revenue.general.view.ColorPreference
+                    android:key="@string/admob_color_key"
+                    android:title="@string/line_color"
+                    android:defaultValue="@color/admob"
+                    android:negativeButtonText="@null"
+                    android:positiveButtonText="@null"
+                    app:numColumns="5"
+                    app:itemLayout="@layout/dash_grid_item_color"/>
+
+            </PreferenceCategory>
+
+            <PreferenceCategory android:title="@string/sync_settings">
+                <ListPreference
+                    android:entries="@array/syncFrequency"
+                    android:entryValues="@array/syncFrequencyValues"
+                    android:key="@string/admob_syncfrequency_key"
+                    android:title="@string/syncfrequency" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/admob_notify_key"
+                    android:summary="@string/notify_summary"
+                    android:title="@string/notify" />
+
+            </PreferenceCategory>
+            <PreferenceCategory android:title="@string/other_settings">
+                <Preference
+                    android:key="@string/admob_stats_key"
+                    android:summary="@string/admob_stats_summary"
+                    android:title="@string/admob_stats" />
+                <Preference
+                    android:key="@string/admob_reset_key"
+                    android:title="@string/admob_reset" />
+
+            </PreferenceCategory>
+
+        </PreferenceScreen>
+
+
+        <PreferenceScreen android:title="@string/tapjoy">
+
+            <PreferenceCategory android:key="@string/tapjoy_api_settings">
+                <Preference
+                    android:key="@string/tapjoy_start_date_key"
+                    android:summary="@string/start_date_blank"
+                    android:title="@string/start_date" />
+
+                <EditTextPreference
+                    android:defaultValue="@string/tapjoy_email_default"
+                    android:hint="@string/tapjoy_email_default"
+                    android:key="@string/tapjoy_email_key"
+                    android:title="@string/tapjoy_email" />
+
+                <EditTextPreference
+                    android:defaultValue="@string/tapjoy_apikey_default"
+                    android:hint="@string/tapjoy_apikey_default"
+                    android:key="@string/tapjoy_apikey_key"
+                    android:title="@string/tapjoy_apikey" />
+
+                <sa.revenue.general.view.ColorPreference
+                    android:key="@string/tapjoy_color_key"
+                    android:title="@string/line_color"
+                    android:defaultValue="@color/tapjoy"
+                    android:negativeButtonText="@null"
+                    android:positiveButtonText="@null"
+                    app:numColumns="5"
+                    app:itemLayout="@layout/dash_grid_item_color"/>
+
+            </PreferenceCategory>
+
+            <PreferenceCategory android:title="@string/sync_settings">
+                <ListPreference
+                    android:entries="@array/syncFrequency"
+                    android:entryValues="@array/syncFrequencyValues"
+                    android:key="@string/tapjoy_syncfrequency_key"
+                    android:title="@string/syncfrequency" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/tapjoy_notify_key"
+                    android:summary="@string/tapjoy_notify_summary"
+                    android:title="@string/tapjoy_notify" />
+            </PreferenceCategory>
+            <PreferenceCategory android:title="@string/other_settings">
+
+                <Preference
+                    android:key="@string/tapjoy_stats_key"
+                    android:summary="@string/tapjoy_stats_summary"
+                    android:title="@string/tapjoy_stats" />
+                <Preference
+                    android:key="@string/tapjoy_reset_key"
+                    android:title="@string/tapjoy_reset" />
+            </PreferenceCategory>
+
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

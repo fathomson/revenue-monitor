@@ -1,0 +1,112 @@
+<resources>
+    <string name="app_name">Revenue Monitor</string>
+    <string name="action_settings">Settings</string>
+    <string name="dialog_password_title">Set password</string>
+    <string name="dialog_password_message">Thanks for downloading Revenue Monitor. In order to store your advertiser credentials securely please set a password (You will never be asked to use this password)</string>
+    <string name="dialog_password_hint">your password</string>
+    <!-- Not optimal solution....-->
+    <string name="secure_password_key">password_key</string>
+    <string name="secure_password_key_default">p</string>
+
+    <!--RevenueFragment Menu -->
+    <string name="refresh">Refresh</string>
+    <string name="today">Today</string>
+    <string name="thisweek">This week</string>
+    <string name="thismonth">This month</string>
+    <string name="thisyear">This year</string>
+    <string name="alltime">All time</string>
+
+    <!-- Apps -->
+    <string name="add_app">Link app advertisers</string>
+    <string name="update_app">Update app advertisers</string>
+    <string name="app_name_hint">Enter app name</string>
+
+    <!--Advertisers -->
+    <string name="general_settings">General</string>
+    <string name="advertiser_settings">Advertisers</string>
+
+    <!-- Type -->
+    <string name="pending_validation">pending</string>
+    <string name="validating">validating</string>
+    <string name="invalid">invalid</string>
+    <string name="valid">valid</string>
+
+    <!-- General -->
+    <string name="start_date">Start date</string>
+    <string name="start_date_blank">Tap to set from date</string>
+    <string name="line_color">Line color in graph</string>
+    <string name="sync_settings">Sync settings</string>
+
+    <string name="syncfrequency">Sync frequency</string>
+    <string name="notify">Notify when done</string>
+    <string name="notify_summary">Show a notification after update</string>
+
+    <string name="other_settings">Other</string>
+
+    <string name="dialog_reset_title">Clean %1$s tables?</string>
+    <string name="dialog_reset_message">Are you sure you want to clean the %1$s data tables? It can take up to %2$s per day to repopulate.</string>
+    <string name="dialog_reset_ok">Yes</string>
+    <string name="dialog_reset_cancel">Cancel</string>
+
+    <!--  Support multiple notifications, text make more neat.-->
+    <string name="notification_title">Revenue monitor</string>
+    <string name="notification_text">New data for %1$s</string>
+
+
+    <!--Admob -->
+    <string name="admob">Admob</string>
+    <string name="admob_api_settings">API settings</string>
+    <string name="admob_email">Your Admob email</string>
+    <string name="admob_email_key">admob_email</string>
+    <string name="admob_email_summary">admin@admob.com</string>
+    <string name="admob_email_default">Tap to set your Admob email.</string>
+
+    <string name="admob_account_id">Your Admob account id</string>
+    <string name="admob_account_id_key">admob_account_id</string>
+    <string name="admob_account_id_summary">Account id: %1$s\nAccount name: %2$s</string>
+    <string name="admob_account_id_default">Tap to set</string>
+    <string name="admob_account_name_key">admob_account_name</string>
+    <string name="admob_account_name_default">Tap to set</string>
+
+    <string name="admob_start_date_key">admob_startdate</string>
+    <string name="admob_color_key">admob_color</string>
+
+
+    <string name="admob_syncfrequency_key">admob_syncfrequency</string>
+    <string name="admob_syncfrequency_default">2</string>
+    <string name="admob_notify_key">admob_notify</string>
+
+    <string name="admob_stats">Admob data stats</string>
+    <string name="admob_stats_key">admob_stats</string>
+    <string name="admob_stats_summary">Last parsed date: %1$s\nDays in database: %2$d\n# of app rows in database: %3$d</string>
+    <string name="admob_reset">Resync all data (takes 0.5s per day)</string>
+    <string name="admob_reset_key">admob_reset</string>
+
+
+    <!--Tapjoy -->
+    <string name="tapjoy">Tapjoy</string>
+    <string name="tapjoy_api_settings">API settings</string>
+    <string name="tapjoy_email">Your tapjoy email address</string>
+    <string name="tapjoy_email_key">tapjoy_email</string>
+    <string name="tapjoy_email_default">info@tapjoy.com</string>
+    <string name="tapjoy_apikey">Api key</string>
+    <string name="tapjoy_apikey_key">tapjoy_apikey</string>
+    <string name="tapjoy_apikey_default">asdf807asd8fh23hd3h3dukh83234jhd</string>
+
+    <string name="tapjoy_start_date_key">tapjoy_startdate</string>
+    <string name="tapjoy_color_key">tapjoy_color</string>
+
+    <string name="tapjoy_syncfrequency_key">tapjoy_syncfrequency</string>
+    <string name="tapjoy_syncfrequency_default">2</string>
+    <string name="tapjoy_notify">Notify when done</string>
+    <string name="tapjoy_notify_key">tapjoy_notify</string>
+    <string name="tapjoy_notify_summary">Show a notification after update</string>
+
+    <string name="tapjoy_stats">Tapjoy data stats</string>
+    <string name="tapjoy_stats_key">tapjoy_stats</string>
+    <string name="tapjoy_stats_summary">Last parsed date: %1$s\nDays in database: %2$d\n# of app rows in database: %3$d</string>
+    <string name="tapjoy_reset">Resync all data (takes 30s per day)</string>
+    <string name="tapjoy_reset_key">tapjoy_reset</string>
+
+
+</resources>

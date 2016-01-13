@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.nirhart.parallaxscroll.views.ParallaxScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:transformlayout="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parallaxScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:parallax_factor="1.9"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progressBar_revenueChartLoading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textView_revenueSum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart_Revenue"
+                android:layout_width="match_parent"
+
+                android:layout_height="200dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textView_revenueSum" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <sa.revenue.general.view.TransformLayoutWithHeader
+                android:id="@+id/transformLayout_admob"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                transformlayout:detailsLayout="@layout/transform_layout_admob_details"
+                transformlayout:headerText="@string/admob" />
+
+
+            <sa.revenue.general.view.TransformLayoutWithHeader
+                android:id="@+id/transformLayout_tapjoy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                transformlayout:detailsLayout="@layout/transform_layout_tapjoy_details"
+                transformlayout:headerText="@string/tapjoy" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</com.nirhart.parallaxscroll.views.ParallaxScrollView>
