@@ -26,7 +26,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.nirhart.parallaxscroll.views.ParallaxScrollView;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -378,7 +377,7 @@ public class RevenueFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 updateLoading();
-                Utils.startAllUpdateServices(globalContext);
+                Utils.checkAndUpdateData(globalContext);
                 break;
             case R.id.action_today:
                 periodSelected = 0;
@@ -414,10 +413,10 @@ public class RevenueFragment extends Fragment {
         super.onResume();
         try {
             //When init and when has parsed today date.
-            if (AdmobUtils.getLastParsedDate(globalContext) == null || AdmobUtils.todayString().equals(AdmobUtils.getLastParsedDate(globalContext))) {
+            if (AdmobUtils.getLastParsedDate(globalContext) == null || Utils.todayString(AdmobUtils.admobDateFormat).equals(AdmobUtils.getLastParsedDate(globalContext))) {
                 transformLayout_admob.setLoading(false);
             }
-            if (TapjoyUtils.getLastParsedDate(globalContext) == null || TapjoyUtils.todayString().equals(TapjoyUtils.getLastParsedDate(globalContext))) {
+            if (TapjoyUtils.getLastParsedDate(globalContext) == null || Utils.todayString(TapjoyUtils.tapjoyDateFormat).equals(TapjoyUtils.getLastParsedDate(globalContext))) {
                 transformLayout_tapjoy.setLoading(false);
             }
         } catch (ParseException e) {

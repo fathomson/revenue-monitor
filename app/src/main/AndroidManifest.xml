@@ -23,7 +23,10 @@
         android:theme="@style/AppTheme">
 
         <service android:name=".advertisers.tapjoy.UpdateTapjoyService" />
+        <service android:name=".advertisers.tapjoy.HistoricalLoadTapjoyService" />
+
         <service android:name=".advertisers.admob.UpdateAdmobService" />
+        <service android:name=".advertisers.admob.HistoricalLoadAdmobService" />
 
         <activity android:name=".InitActivity">
             <intent-filter>

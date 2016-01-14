@@ -9,6 +9,7 @@ import com.orhanobut.hawk.Hawk;
 import java.text.ParseException;
 
 import sa.revenue.R;
+import sa.revenue.Utils;
 import sa.revenue.general.ApiRequest;
 
 /**
@@ -21,7 +22,7 @@ public class UpdateAdmobReceiver extends BroadcastReceiver {
         try {
             //Database is up to date
             String lastParsedDate = AdmobUtils.getLastParsedDate(context);
-            if (lastParsedDate.equals(AdmobUtils.todayString())) {
+            if (lastParsedDate.equals(Utils.todayString(AdmobUtils.admobDateFormat))) {
                 boolean showNotification = Hawk.get(context.getString(R.string.admob_notify_key), false);
                 new ApiRequest.Admob(context).send(lastParsedDate, showNotification);
             }

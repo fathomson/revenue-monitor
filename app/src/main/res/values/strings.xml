@@ -26,10 +26,9 @@
     <string name="advertiser_settings">Advertisers</string>
 
     <!-- Type -->
-    <string name="pending_validation">pending</string>
-    <string name="validating">validating</string>
-    <string name="invalid">invalid</string>
-    <string name="valid">valid</string>
+    <string name="validating">Validating credentials (can take up to 1m)</string>
+    <string name="invalid">Invalid credentials</string>
+    <string name="valid">Valid credentials</string>
 
     <!-- General -->
     <string name="start_date">Start date</string>
@@ -56,17 +55,20 @@
     <!--Admob -->
     <string name="admob">Admob</string>
     <string name="admob_api_settings">API settings</string>
-    <string name="admob_email">Your Admob email</string>
+    <string name="admob_email">Admob email</string>
     <string name="admob_email_key">admob_email</string>
     <string name="admob_email_summary">admin@admob.com</string>
     <string name="admob_email_default">Tap to set your Admob email.</string>
 
-    <string name="admob_account_id">Your Admob account id</string>
+    <string name="admob_account_id">Admob account id</string>
     <string name="admob_account_id_key">admob_account_id</string>
     <string name="admob_account_id_summary">Account id: %1$s\nAccount name: %2$s</string>
     <string name="admob_account_id_default">Tap to set</string>
     <string name="admob_account_name_key">admob_account_name</string>
     <string name="admob_account_name_default">Tap to set</string>
+
+    <string name="admob_start_data_load_key">admob_data_load_start</string>
+    <string name="admob_start_data_load_title">Start Admob data load</string>
 
     <string name="admob_start_date_key">admob_startdate</string>
     <string name="admob_color_key">admob_color</string>
@@ -86,12 +88,16 @@
     <!--Tapjoy -->
     <string name="tapjoy">Tapjoy</string>
     <string name="tapjoy_api_settings">API settings</string>
-    <string name="tapjoy_email">Your tapjoy email address</string>
+    <string name="tapjoy_email">Tapjoy email</string>
     <string name="tapjoy_email_key">tapjoy_email</string>
     <string name="tapjoy_email_default">info@tapjoy.com</string>
     <string name="tapjoy_apikey">Api key</string>
     <string name="tapjoy_apikey_key">tapjoy_apikey</string>
     <string name="tapjoy_apikey_default">asdf807asd8fh23hd3h3dukh83234jhd</string>
+    <string name="tapjoy_valid">tapjoy_valid</string>
+
+    <string name="tapjoy_start_data_load_key">tapjoy_data_load_start</string>
+    <string name="tapjoy_start_data_load_title">Start Tapjoy data load</string>
 
     <string name="tapjoy_start_date_key">tapjoy_startdate</string>
     <string name="tapjoy_color_key">tapjoy_color</string>

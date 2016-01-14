@@ -36,6 +36,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import sa.revenue.AppController;
 import sa.revenue.R;
+import sa.revenue.Utils;
 import sa.revenue.advertisers.admob.AdmobUtils;
 import sa.revenue.advertisers.admob.UpdateAdmobService;
 import sa.revenue.advertisers.tapjoy.TapjoyUtils;
@@ -132,8 +133,8 @@ public class ApiRequest {
                             System.out.println("No rows returned.");
                         }
 
-                        if (AdmobUtils.shouldParseNextDay(startDate)) {
-                            send(AdmobUtils.nextDayString(startDate), false);
+                        if (Utils.shouldParseNextDay(AdmobUtils.admobDateFormat,startDate)) {
+                            //send(Utils.nextDayString(AdmobUtils.admobDateFormat,startDate), false);
                             EventBus.getDefault().post(new Message(Advertiser.ADMOB, Message.Type.PARSING_NEXT_DAY));
                         } else {
                             EventBus.getDefault().post(new Message(Advertiser.ADMOB, Message.Type.PARSING_DONE));
@@ -172,15 +173,13 @@ public class ApiRequest {
 
     public static class Tapjoy {
         //get credentials and decrypt them.
-        static String emailKey = Hawk.get(mContext.getString(R.string.tapjoy_email_key));
-        static String apikeyKey = Hawk.get(mContext.getString(R.string.tapjoy_apikey_key));
         static String base_url = "https://api.tapjoy.com/";
 
         public static void validate(String newEmail, String newKey) throws ParseException {
             String url = String.format(base_url + "reporting_data.json?email=%1$s&api_key=%2$s&date=%3$s",
                     newEmail,
                     newKey,
-                    TapjoyUtils.todayString());
+                    Utils.todayString(TapjoyUtils.tapjoyDateFormat));
 
 
             JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
@@ -188,7 +187,7 @@ public class ApiRequest {
                         @Override
                         public void onResponse(JSONObject response) {
                             //Valid when this response
-                            Hawk.put(mContext.getString(R.string.tapjoy_api_settings), mContext.getString(R.string.valid));
+                            Hawk.put(mContext.getString(R.string.tapjoy_valid), mContext.getString(R.string.valid));
                             //Set preference to valid and send broadcast to update screen.
                             EventBus.getDefault().post(new Message(Advertiser.TAPJOY, Message.Type.UPDATE_API_STATUS));
 
@@ -198,7 +197,7 @@ public class ApiRequest {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             //Invalid when this response
-                            Hawk.put(mContext.getString(R.string.tapjoy_api_settings), mContext.getString(R.string.invalid));
+                            Hawk.put(mContext.getString(R.string.tapjoy_valid), mContext.getString(R.string.invalid));
                             //Set preference to valid and send broadcast to update screen.
                             EventBus.getDefault().post(new Message(Advertiser.TAPJOY, Message.Type.UPDATE_API_STATUS));
                         }
@@ -211,6 +210,9 @@ public class ApiRequest {
         }
 
         public static void send(final String startDate, final boolean notifyWhenDone) {
+            String emailKey = Hawk.get(mContext.getString(R.string.tapjoy_email_key));
+            String apikeyKey = Hawk.get(mContext.getString(R.string.tapjoy_apikey_key));
+
             String url = String.format(base_url + "reporting_data.json?email=%1$s&api_key=%2$s&date=%3$s",
                     emailKey,
                     apikeyKey,
@@ -227,13 +229,13 @@ public class ApiRequest {
                                 Day marketingData = jsonAdapter.fromJson(response.toString());
 
                                 //Delete date from startDate
-                                TapjoyUtils.deleteDataFromDay(startDate);
+                                TapjoyUtils.deleteDataFromDay(marketingData.getDate());
 
                                 //Add data from startdate
                                 TapjoyUtils.storeApiToDb(marketingData);
 
-                                if (TapjoyUtils.shouldParseNextDay(marketingData.getDate())) {
-                                    send(TapjoyUtils.nextDayString(marketingData.getDate()), false);
+                                if (Utils.shouldParseNextDay(TapjoyUtils.tapjoyDateFormat,marketingData.getDate())) {
+                                  //   send(TapjoyUtils.nextDayString(marketingData.getDate()), false);
                                     EventBus.getDefault().post(new Message(Advertiser.TAPJOY, Message.Type.PARSING_NEXT_DAY));
                                 } else {
                                     EventBus.getDefault().post(new Message(Advertiser.TAPJOY, Message.Type.PARSING_DONE));

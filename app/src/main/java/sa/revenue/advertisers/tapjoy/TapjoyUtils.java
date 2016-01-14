@@ -4,10 +4,7 @@ import android.content.Context;
 
 import com.orhanobut.hawk.Hawk;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import sa.revenue.AppController;
@@ -22,18 +19,15 @@ import sa.revenue.general.db.TapjoyAppDao;
 import sa.revenue.general.db.TapjoyDay;
 import sa.revenue.general.db.TapjoyDayDao;
 
-
+//TODO - documentation
 public class TapjoyUtils {
     public static String tapjoy = "tapjoy";
-    static SimpleDateFormat tapjoyDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public static SimpleDateFormat tapjoyDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     static DaoSession daoSession = AppController.getInstance().getDaoSession();
     static AdPlacementDao adPlacementDao = daoSession.getAdPlacementDao();
     static TapjoyAppDao tapjoyAppDao = daoSession.getTapjoyAppDao();
     static TapjoyDayDao tapjoyDayDao = daoSession.getTapjoyDayDao();
-
-    public static boolean hasData() {
-        return tapjoyDayDao.count() > 0;
-    }
 
     public static void storeApiToDb(Day day) {
         String date = day.getDate();
@@ -106,17 +100,6 @@ public class TapjoyUtils {
         tapjoyDayDao.insert(tapjoyDay);
     }
 
-    private static Integer calculateIntegerSum(Integer dayValue, Integer appValue) {
-        return dayValue != null ? dayValue + appValue : appValue;
-
-    }
-
-    private static Double calculateDoubleSum(Double dayValue, Double appValue) {
-        return dayValue != null ? dayValue + appValue : appValue;
-
-    }
-
-
     private static TapjoyApp ApiAppToDbApp(long adPlacementId, String date, App apiApp) {
         return new TapjoyApp(null, adPlacementId, date,
                 apiApp.getName(),
@@ -172,6 +155,16 @@ public class TapjoyUtils {
                 convertIntArrayToString(apiApp.getDirectPlayConversionsHourly()));
     }
 
+    private static Integer calculateIntegerSum(Integer dayValue, Integer appValue) {
+        return dayValue != null ? dayValue + appValue : appValue;
+
+    }
+
+    private static Double calculateDoubleSum(Double dayValue, Double appValue) {
+        return dayValue != null ? dayValue + appValue : appValue;
+
+    }
+
     public static String convertIntArrayToString(int[] array) {
         String LIST_SEPARATOR = ",";
         StringBuffer stringBuffer = new StringBuffer();
@@ -185,7 +178,6 @@ public class TapjoyUtils {
 
         return stringBuffer.toString();
     }
-
 
     public static String convertDoubleArrayToString(double[] array) {
         String LIST_SEPARATOR = ",";
@@ -232,52 +224,17 @@ public class TapjoyUtils {
         }
     }
 
-    public static boolean shouldParseNextDay(String oldDate) throws ParseException {
-        Calendar old = Calendar.getInstance();
-        old.setTime(tapjoyDateFormat.parse(oldDate));
-        old.set(Calendar.HOUR_OF_DAY, 23);
-        old.set(Calendar.MINUTE, 59);
-        old.set(Calendar.SECOND, 59);
-        return old.before(Calendar.getInstance());
-    }
-
-    public static String todayString() throws ParseException {
-        Calendar c = Calendar.getInstance();
-        return tapjoyDateFormat.format(new Date(c.getTimeInMillis()));
-    }
-
-    public static String nextDayString(String date) throws ParseException {
-        Calendar c = Calendar.getInstance();
-        c.setTime(tapjoyDateFormat.parse(date));
-        c.add(Calendar.DATE, 1);
-        return tapjoyDateFormat.format(new Date(c.getTimeInMillis()));
-    }
-
-
-    public static Calendar getCalendar(String date){
-        Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(tapjoyDateFormat.parse(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return c;
-    }
-
-    public static String getDateFromDatePicker(int year, int month, int day) {
-        Calendar c = Calendar.getInstance();
-        c.set(year, month, day);
-        return tapjoyDateFormat.format(c.getTime());
+    public static boolean hasData() {
+        return tapjoyDayDao.count() > 0;
     }
 
     public static String getLastParsedDate(Context context) {
         String lastParsedDate = Hawk.get(context.getString(R.string.tapjoy_start_date_key), null);
-        List<TapjoyDay> tapjoyDays = tapjoyDayDao.queryBuilder().orderDesc(TapjoyDayDao.Properties.Id).limit(1).list();
+        List<TapjoyDay> tapjoyDays = tapjoyDayDao.queryBuilder().orderDesc(TapjoyDayDao.Properties.Date).limit(1).list();
         if (tapjoyDays.size() > 0)
             lastParsedDate = tapjoyDays.get(0).getDate();
         return lastParsedDate;
     }
-
 
     public static long getDaysInDB() {
         return tapjoyDayDao.queryBuilder().count();
@@ -287,12 +244,27 @@ public class TapjoyUtils {
         return tapjoyAppDao.queryBuilder().count();
     }
 
+    public static boolean hasParsedDate(String date) {
+        return tapjoyDayDao.queryBuilder().where(TapjoyDayDao.Properties.Date.eq(date)).count() > 0;
+    }
+
     public static void clearDayAndAppTable() {
         tapjoyDayDao.deleteAll();
         tapjoyAppDao.deleteAll();
     }
 
-    public static void deleteDataFromDay(String date){
+    public static boolean tapjoySetupCorrect(Context context) {
+        String startDate = Hawk.get(context.getString(R.string.tapjoy_start_date_key));
+        String email = Hawk.get(context.getString(R.string.tapjoy_email_key));
+        String apikey = Hawk.get(context.getString(R.string.tapjoy_apikey_key));
+        return (startDate != null && email != null && apikey != null);
+    }
+
+    public static boolean tapjoyCredentialsAreValid(Context context) {
+        return Hawk.get(context.getString(R.string.tapjoy_valid),"null").equals(context.getString(R.string.valid));
+    }
+
+    public static void deleteDataFromDay(String date) {
         //Try to remove apps and day which are on startDate, this to prevent duplicate entries.
         List<TapjoyDay> tapjoyDays = tapjoyDayDao.queryBuilder().where(TapjoyDayDao.Properties.Date.eq(date)).list();
         for (TapjoyDay day : tapjoyDays) {
@@ -304,4 +276,14 @@ public class TapjoyUtils {
         }
     }
 
+    public static void cleanUpDatabaseBefore(String date) {
+        List<TapjoyDay> tapjoyDays = tapjoyDayDao.queryBuilder().where(TapjoyDayDao.Properties.Date.lt(date)).list();
+        for (TapjoyDay day : tapjoyDays) {
+            tapjoyDayDao.delete(day);
+        }
+        List<TapjoyApp> tapjoyAppss = tapjoyAppDao.queryBuilder().where(TapjoyAppDao.Properties.Date.lt(date)).list();
+        for (TapjoyApp app : tapjoyAppss) {
+            tapjoyAppDao.delete(app);
+        }
+    }
 }

@@ -16,17 +16,16 @@ import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.android.gms.common.AccountPicker;
 import com.orhanobut.hawk.Hawk;
@@ -40,12 +39,13 @@ import de.greenrobot.event.EventBus;
 import sa.revenue.R;
 import sa.revenue.Utils;
 import sa.revenue.advertisers.admob.AdmobUtils;
+import sa.revenue.advertisers.admob.HistoricalLoadAdmobService;
 import sa.revenue.advertisers.admob.UpdateAdmobReceiver;
 import sa.revenue.advertisers.admob.UpdateAdmobService;
 import sa.revenue.advertisers.admob.adapter.AdmobAccountAdapter;
+import sa.revenue.advertisers.tapjoy.HistoricalLoadTapjoyService;
 import sa.revenue.advertisers.tapjoy.TapjoyUtils;
 import sa.revenue.advertisers.tapjoy.UpdateTapjoyReceiver;
-import sa.revenue.advertisers.tapjoy.UpdateTapjoyService;
 import sa.revenue.general.ApiRequest;
 import sa.revenue.general.model.Advertiser;
 import sa.revenue.general.model.Message;
@@ -69,6 +69,7 @@ public class SettingsFragment extends PreferenceFragment {
     private Preference mAdmobDate;
     private Preference mAdmobEmail;
     private Preference mAdmobId;
+    private Preference mAdmobStart;
     private ListPreference mAdmobSync;
     private CheckBoxPreference mAdmobNotify;
     private Preference mAdmobStats;
@@ -85,6 +86,7 @@ public class SettingsFragment extends PreferenceFragment {
     private Preference mTapjoyDate;
     private EditTextPreference mTapjoyEmail;
     private EditTextPreference mTapjoyApikey;
+    private Preference mTapjoyStart;
     private ListPreference mTapjoySync;
     private CheckBoxPreference mTapjoyNotify;
     private Preference mTapjoyStats;
@@ -107,7 +109,7 @@ public class SettingsFragment extends PreferenceFragment {
         globalContext = this.getActivity();
         editor = PreferenceManager.getDefaultSharedPreferences(globalContext).edit();
 
-       //START Admob preferences
+        //START Admob preferences
         admobStartDate = Hawk.get(getString(R.string.admob_start_date_key), getString(R.string.start_date_blank));
         admobEmail = Hawk.get(getString(R.string.admob_email_key), getString(R.string.admob_email_summary));
         admobId = Hawk.get(getString(R.string.admob_account_id_key), getString(R.string.admob_account_id_default));
@@ -117,6 +119,7 @@ public class SettingsFragment extends PreferenceFragment {
         mAdmobDate = findPreference(getString(R.string.admob_start_date_key));
         mAdmobEmail = findPreference(getString(R.string.admob_email_key));
         mAdmobId = findPreference(getString(R.string.admob_account_id_key));
+        mAdmobStart = findPreference(getString(R.string.admob_start_data_load_key));
         mAdmobSync = (ListPreference) findPreference(getString(R.string.admob_syncfrequency_key));
         mAdmobNotify = (CheckBoxPreference) findPreference(getString(R.string.admob_notify_key));
         mAdmobStats = findPreference(getString(R.string.admob_stats_key));
@@ -132,6 +135,7 @@ public class SettingsFragment extends PreferenceFragment {
         mTapjoyDate = findPreference(getString(R.string.tapjoy_start_date_key));
         mTapjoyEmail = (EditTextPreference) findPreference(getString(R.string.tapjoy_email_key));
         mTapjoyApikey = (EditTextPreference) findPreference(getString(R.string.tapjoy_apikey_key));
+        mTapjoyStart = findPreference(getString(R.string.tapjoy_start_data_load_key));
         mTapjoySync = (ListPreference) findPreference(getString(R.string.tapjoy_syncfrequency_key));
         mTapjoyNotify = (CheckBoxPreference) findPreference(getString(R.string.tapjoy_notify_key));
         mTapjoyStats = findPreference(getString(R.string.tapjoy_stats_key));
@@ -151,6 +155,7 @@ public class SettingsFragment extends PreferenceFragment {
         mAdmobDate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                admobStartDate = Hawk.get(getString(R.string.admob_start_date_key), getString(R.string.start_date_blank));
                 showDateDialog(Advertiser.ADMOB, admobStartDate);
                 return true;
             }
@@ -173,6 +178,14 @@ public class SettingsFragment extends PreferenceFragment {
                 } else {
                     pickGoogleUserAccount();
                 }
+                return true;
+            }
+        });
+
+        mAdmobStart.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startAdmobHistoricalLoad(true);
                 return true;
             }
         });
@@ -202,12 +215,11 @@ public class SettingsFragment extends PreferenceFragment {
         //END Admob preferen
 
         //START Tapjoy preferences
-        updateCategoryTitle(getString(R.string.tapjoy_api_settings));
-
         mTapjoyDate.setSummary(tapjoyStartDate);
         mTapjoyDate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                tapjoyStartDate = Hawk.get(getString(R.string.tapjoy_start_date_key), getString(R.string.start_date_blank));
                 showDateDialog(Advertiser.TAPJOY, tapjoyStartDate);
                 return true;
             }
@@ -216,7 +228,8 @@ public class SettingsFragment extends PreferenceFragment {
         mTapjoyEmail.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mTapjoyEmail.setSummary((String) newValue);
+                String newEmail = (String) newValue;
+                mTapjoyEmail.setSummary(newEmail);
                 Hawk.put(getString(R.string.tapjoy_email_key), newValue);
                 validateTapjoyCredentials(mTapjoyEmail.getSummary().toString(), mTapjoyApikey.getSummary().toString());
                 return true;
@@ -227,9 +240,19 @@ public class SettingsFragment extends PreferenceFragment {
         mTapjoyApikey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mTapjoyApikey.setSummary((String) newValue);
-                Hawk.put(getString(R.string.tapjoy_apikey_key), newValue);
+                String newApiKey = (String) newValue;
+                mTapjoyApikey.setSummary(newApiKey);
+                Hawk.put(getString(R.string.tapjoy_apikey_key), newApiKey);
                 validateTapjoyCredentials(mTapjoyEmail.getSummary().toString(), mTapjoyApikey.getSummary().toString());
+                return true;
+            }
+        });
+
+
+        mTapjoyStart.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startTapjoyHistoricalLoad(true);
                 return true;
             }
         });
@@ -263,6 +286,36 @@ public class SettingsFragment extends PreferenceFragment {
 
     //START Admob
 
+    private void startAdmobHistoricalLoad(boolean startLoad) {
+        //Admob valid - start historical data load
+        if (AdmobUtils.admobSetupCorrect(globalContext)) {
+            if (startLoad) {
+                Intent admob = new Intent(globalContext, HistoricalLoadAdmobService.class);
+                globalContext.startService(admob);
+                try {
+                    updateAdmobParseStatus();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } else {
+            StringBuilder message = new StringBuilder();
+            message.append(Hawk.get(getString(R.string.admob_start_date_key)) == null ? getString(R.string.start_date) + " " : "");
+            message.append(Hawk.get(getString(R.string.admob_email_key)) == null ? getString(R.string.admob_email) + " " : "");
+            message.append(Hawk.get(getString(R.string.admob_account_id_key)) == null ? getString(R.string.admob_account_id) + " " : "");
+            message.append("required");
+            mAdmobStart.setSummary(message.toString());
+        }
+
+    }
+
+    private void updateAdmobParseStatus() throws ParseException {
+        long daysInDatabase = AdmobUtils.getDaysInDB();
+        long totalDays = Utils.getDaysAgo(AdmobUtils.admobDateFormat, (String) Hawk.get(getString(R.string.admob_start_date_key)));
+        mAdmobStart.setSummary("Data loading (" + daysInDatabase + "/" + (totalDays + 1) + ")");
+    }
+
     private void updateAdmobStats() {
         String lastParsedDateAdmob = AdmobUtils.getLastParsedDate(globalContext);
         long admobDaysInDB = AdmobUtils.getDaysInDB();
@@ -277,7 +330,6 @@ public class SettingsFragment extends PreferenceFragment {
                 accountTypes, true, null, null, null, null);
         startActivityForResult(intent, ADMOB_REQUEST_PICK_GOOGLE_ACCOUNT);
     }
-
 
     private class getAdmobAccountsTask extends AsyncTask<Void, Void, List<sa.revenue.advertisers.admob.model.Account>> {
         AlertDialog alertDialog;
@@ -325,26 +377,72 @@ public class SettingsFragment extends PreferenceFragment {
                     mAdmobId.setSummary(String.format(getString(R.string.admob_account_id_summary), admobId, admobName));
                     if (alertDialog.isShowing())
                         alertDialog.dismiss();
-                    Toast.makeText(globalContext,"Go to Revenue fragment and press sync",Toast.LENGTH_LONG).show();
+
+
+                    //Update start load but do not start yet.
+                    startAdmobHistoricalLoad(false);
                 }
             });
 
         }
     }
 
-
     DatePickerDialog.OnDateSetListener admobDataSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            String startDate = TapjoyUtils.getDateFromDatePicker(year, monthOfYear, dayOfMonth);
+            String startDate = Utils.getDateFromDatePicker(AdmobUtils.admobDateFormat, year, monthOfYear, dayOfMonth);
             Hawk.put(getString(R.string.admob_start_date_key), startDate);
             mAdmobDate.setSummary(startDate);
+
+            //Update start load but do not start yet.
+            startAdmobHistoricalLoad(false);
         }
     };
     //END Admob
 
 
     //START Tapjoy preferences
+
+    private void startTapjoyHistoricalLoad(boolean startLoad) {
+        //Admob valid - start historical data load
+        if (TapjoyUtils.tapjoySetupCorrect(globalContext)) {
+            String tapjoyValid = Hawk.get(getString(R.string.tapjoy_valid));
+
+            //Check if tapjoy credentials are setup correctly
+            if (TapjoyUtils.tapjoyCredentialsAreValid(globalContext)) {
+
+                if (startLoad) {
+                    Intent tapjoy = new Intent(globalContext, HistoricalLoadTapjoyService.class);
+                    globalContext.startService(tapjoy);
+                    try {
+                        updateTapjoyParseStatus();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                mTapjoyStart.setSummary(tapjoyValid);
+
+            }
+
+
+        } else {
+            StringBuilder message = new StringBuilder();
+            message.append(Hawk.get(getString(R.string.tapjoy_start_date_key)) == null ? getString(R.string.start_date) + " " : "");
+            message.append(Hawk.get(getString(R.string.tapjoy_email_key)) == null ? getString(R.string.tapjoy_email) + " " : "");
+            message.append(Hawk.get(getString(R.string.tapjoy_apikey_key)) == null ? getString(R.string.tapjoy_apikey) + " " : "");
+            message.append("required");
+            mTapjoyStart.setSummary(message.toString());
+        }
+
+    }
+
+    private void updateTapjoyParseStatus() throws ParseException {
+        long daysInDatabase = TapjoyUtils.getDaysInDB();
+        long totalDays = Utils.getDaysAgo(TapjoyUtils.tapjoyDateFormat, (String) Hawk.get(getString(R.string.tapjoy_start_date_key)));
+        mTapjoyStart.setSummary("Data loading (" + daysInDatabase + "/" + (totalDays + 1) + ")");
+
+    }
 
     private void updateTapjoyStats() {
 
@@ -356,19 +454,15 @@ public class SettingsFragment extends PreferenceFragment {
 
     }
 
-    private void updateCategoryTitle(String prefCatKey) {
-        //Find preference
-        PreferenceCategory prefCat = (PreferenceCategory) findPreference(prefCatKey);
-        //Find status
-        prefCat.setTitle(prefCatKey + " [" + Hawk.get(prefCatKey, "empty") + "]");
-    }
 
     DatePickerDialog.OnDateSetListener tapjoyDataSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            String startDate = TapjoyUtils.getDateFromDatePicker(year, monthOfYear, dayOfMonth);
+            String startDate = Utils.getDateFromDatePicker(TapjoyUtils.tapjoyDateFormat, year, monthOfYear, dayOfMonth);
             Hawk.put(getString(R.string.tapjoy_start_date_key), startDate);
             mTapjoyDate.setSummary(startDate);
+
+            startTapjoyHistoricalLoad(false);
         }
     };
 
@@ -376,30 +470,27 @@ public class SettingsFragment extends PreferenceFragment {
     private void validateTapjoyCredentials(String newEmail, String newKey) {
         //Check if valid email address  and apikey(32)
         if (Utils.isValidEmail(newEmail) && newKey.length() == 32) {
-            new validateTapjoyCredentialsTask(getString(R.string.tapjoy_api_settings), newEmail, newKey).execute();
+            new validateTapjoyCredentialsTask(newEmail, newKey).execute();
         } else {
             //Invalid..
-            Hawk.put(getString(R.string.tapjoy_api_settings), getString(R.string.invalid));
-            updateCategoryTitle(getString(R.string.tapjoy_api_settings));
+            Hawk.put(getString(R.string.tapjoy_valid), getString(R.string.invalid));
         }
 
     }
 
     private class validateTapjoyCredentialsTask extends AsyncTask<Void, Void, String> {
-        String name;
         String newEmail;
         String newKey;
 
-        private validateTapjoyCredentialsTask(String name, String newEmail, String newKey) {
-            this.name = name;
+        private validateTapjoyCredentialsTask(String newEmail, String newKey) {
             this.newEmail = newEmail;
             this.newKey = newKey;
         }
 
         @Override
         protected void onPreExecute() {
-            Hawk.put(getString(R.string.tapjoy_api_settings), getString(R.string.validating));
-            updateCategoryTitle(getString(R.string.tapjoy_api_settings));
+            Hawk.put(getString(R.string.tapjoy_valid), getString(R.string.validating));
+            startTapjoyHistoricalLoad(false);
         }
 
         @Override
@@ -414,7 +505,7 @@ public class SettingsFragment extends PreferenceFragment {
 
         @Override
         protected void onPostExecute(String revenue) {
-            updateCategoryTitle(getString(R.string.tapjoy_api_settings));
+            startTapjoyHistoricalLoad(false);
         }
     }
 
@@ -441,11 +532,11 @@ public class SettingsFragment extends PreferenceFragment {
         switch (advertiser) {
             case ADMOB:
                 dateSetListener = admobDataSetListener;
-                c = AdmobUtils.getCalendar(startDate);
+                c = Utils.getCalendar(AdmobUtils.admobDateFormat, startDate);
                 break;
             case TAPJOY:
                 dateSetListener = tapjoyDataSetListener;
-                c = TapjoyUtils.getCalendar(startDate);
+                c = Utils.getCalendar(TapjoyUtils.tapjoyDateFormat, startDate);
                 break;
         }
 
@@ -491,7 +582,11 @@ public class SettingsFragment extends PreferenceFragment {
                         TapjoyUtils.clearDayAndAppTable();
                         if (Hawk.get(getString(R.string.tapjoy_email_key)) != null && Hawk.get(getString(R.string.tapjoy_apikey_key)) != null) {
 
-                            Intent tapjoy = new Intent(globalContext, UpdateTapjoyService.class);
+                            Log.i("Api key", Hawk.get(getString(R.string.tapjoy_apikey_key)) + "");
+
+                            //   Intent tapjoy = new Intent(globalContext, UpdateTapjoyService.class);
+                            //  globalContext.startService(tapjoy);
+                            Intent tapjoy = new Intent(globalContext, HistoricalLoadTapjoyService.class);
                             globalContext.startService(tapjoy);
                             updateTapjoyStats();
                         }
@@ -518,13 +613,16 @@ public class SettingsFragment extends PreferenceFragment {
                     if (email != null) {
                         //When has email, save it and continue to get admob details
                         Hawk.put(getString(R.string.admob_email_key), email);
+                        mAdmobEmail.setSummary(email);
+                        //Update start load but do not start yet.
+                        startAdmobHistoricalLoad(false);
                         new getAdmobAccountsTask().execute();
                     } else {
                         pickGoogleUserAccount();
                     }
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {
-                    //TODO - notify user that this is required to setup admob
+
                 }
                 break;
             default:
@@ -559,17 +657,29 @@ public class SettingsFragment extends PreferenceFragment {
         super.onStop();
     }
 
+
     // Called in Android UI's main thread
     public void onEventMainThread(Message message) {
         switch (message.getAdvertiser()) {
             case ADMOB:
                 updateAdmobStats();
+                try {
+                    updateAdmobParseStatus();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                 break;
             case TAPJOY:
                 updateTapjoyStats();
+                try {
+                    updateTapjoyParseStatus();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 switch (message.getType()) {
                     case UPDATE_API_STATUS:
-                        updateCategoryTitle(getString(R.string.tapjoy_api_settings));
+                        startTapjoyHistoricalLoad(true);
                         break;
 
                 }

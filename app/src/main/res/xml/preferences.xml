@@ -28,14 +28,10 @@
                     android:summary="@string/admob_account_id_summary"
                     android:title="@string/admob_account_id" />
 
-                <sa.revenue.general.view.ColorPreference
-                    android:key="@string/admob_color_key"
-                    android:title="@string/line_color"
-                    android:defaultValue="@color/admob"
-                    android:negativeButtonText="@null"
-                    android:positiveButtonText="@null"
-                    app:numColumns="5"
-                    app:itemLayout="@layout/dash_grid_item_color"/>
+                <Preference
+                    android:key="@string/admob_start_data_load_key"
+                    android:title="@string/admob_start_data_load_title" />
+
 
             </PreferenceCategory>
 
@@ -53,6 +49,14 @@
 
             </PreferenceCategory>
             <PreferenceCategory android:title="@string/other_settings">
+                <sa.revenue.general.view.ColorPreference
+                    android:key="@string/admob_color_key"
+                    android:title="@string/line_color"
+                    android:defaultValue="@color/admob"
+                    android:negativeButtonText="@null"
+                    android:positiveButtonText="@null"
+                    app:numColumns="5"
+                    app:itemLayout="@layout/dash_grid_item_color"/>
                 <Preference
                     android:key="@string/admob_stats_key"
                     android:summary="@string/admob_stats_summary"
@@ -68,7 +72,7 @@
 
         <PreferenceScreen android:title="@string/tapjoy">
 
-            <PreferenceCategory android:key="@string/tapjoy_api_settings">
+            <PreferenceCategory android:title="@string/tapjoy_api_settings">
                 <Preference
                     android:key="@string/tapjoy_start_date_key"
                     android:summary="@string/start_date_blank"
@@ -85,15 +89,10 @@
                     android:hint="@string/tapjoy_apikey_default"
                     android:key="@string/tapjoy_apikey_key"
                     android:title="@string/tapjoy_apikey" />
+                <Preference
+                    android:key="@string/tapjoy_start_data_load_key"
+                    android:title="@string/tapjoy_start_data_load_title" />
 
-                <sa.revenue.general.view.ColorPreference
-                    android:key="@string/tapjoy_color_key"
-                    android:title="@string/line_color"
-                    android:defaultValue="@color/tapjoy"
-                    android:negativeButtonText="@null"
-                    android:positiveButtonText="@null"
-                    app:numColumns="5"
-                    app:itemLayout="@layout/dash_grid_item_color"/>
 
             </PreferenceCategory>
 
@@ -110,6 +109,14 @@
                     android:title="@string/tapjoy_notify" />
             </PreferenceCategory>
             <PreferenceCategory android:title="@string/other_settings">
+                <sa.revenue.general.view.ColorPreference
+                    android:key="@string/tapjoy_color_key"
+                    android:title="@string/line_color"
+                    android:defaultValue="@color/tapjoy"
+                    android:negativeButtonText="@null"
+                    android:positiveButtonText="@null"
+                    app:numColumns="5"
+                    app:itemLayout="@layout/dash_grid_item_color"/>
 
                 <Preference
                     android:key="@string/tapjoy_stats_key"

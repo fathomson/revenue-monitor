@@ -4,10 +4,7 @@ import android.content.Context;
 
 import com.orhanobut.hawk.Hawk;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import sa.revenue.AppController;
@@ -21,12 +18,10 @@ import sa.revenue.general.db.AdmobDayDao;
 import sa.revenue.general.db.DaoSession;
 
 
-/**
- * Created by un on 1/5/2016.
- */
+//TODO - documentation
 public class AdmobUtils {
     public static String admob = "admob";
-    static SimpleDateFormat admobDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public static SimpleDateFormat admobDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     static DaoSession daoSession = AppController.getInstance().getDaoSession();
     static AdPlacementDao adPlacementDao = daoSession.getAdPlacementDao();
     static AdmobAdUnitDao admobAdUnitDao = daoSession.getAdmobAdUnitDao();
@@ -38,7 +33,7 @@ public class AdmobUtils {
 
     public static String getLastParsedDate(Context context) {
         String lastParsedDate = Hawk.get(context.getString(R.string.admob_start_date_key));
-        List<AdmobDay> admobDays = admobDayDao.queryBuilder().orderDesc(AdmobDayDao.Properties.Id).limit(1).list();
+        List<AdmobDay> admobDays = admobDayDao.queryBuilder().orderDesc(AdmobDayDao.Properties.Date).limit(1).list();
         if (admobDays.size() > 0)
             lastParsedDate = admobDays.get(0).getDate();
         return lastParsedDate;
@@ -110,22 +105,6 @@ public class AdmobUtils {
         }
     }
 
-    public static boolean shouldParseNextDay(String oldDate) throws ParseException {
-        Calendar old = Calendar.getInstance();
-        old.setTime(admobDateFormat.parse(oldDate));
-        old.set(Calendar.HOUR_OF_DAY, 23);
-        old.set(Calendar.MINUTE, 59);
-        old.set(Calendar.SECOND, 59);
-        return old.before(Calendar.getInstance());
-    }
-
-    public static String nextDayString(String date) throws ParseException {
-        Calendar c = Calendar.getInstance();
-        c.setTime(admobDateFormat.parse(date));
-        c.add(Calendar.DATE, 1);
-        return admobDateFormat.format(new Date(c.getTimeInMillis()));
-    }
-
     public static long getDaysInDB() {
         return admobDayDao.queryBuilder().count();
     }
@@ -139,12 +118,18 @@ public class AdmobUtils {
         admobDayDao.deleteAll();
     }
 
-    public static String todayString() throws ParseException {
-        Calendar c = Calendar.getInstance();
-        return admobDateFormat.format(new Date(c.getTimeInMillis()));
+    public static boolean hasParsedDate(String date) {
+        return admobDayDao.queryBuilder().where(AdmobDayDao.Properties.Date.eq(date)).count() > 0;
     }
 
-    public static void deleteDataFromDay(String date){
+    public static boolean admobSetupCorrect(Context context) {
+        String startDate = Hawk.get(context.getString(R.string.admob_start_date_key));
+        String admobEmail = Hawk.get(context.getString(R.string.admob_email_key));
+        String admobAccountId = Hawk.get(context.getString(R.string.admob_account_id_key));
+        return (startDate != null && admobEmail != null && admobAccountId != null);
+    }
+
+    public static void deleteDataFromDay(String date) {
         //Try to remove apps and day which are on startDate, this to prevent duplicate entries.
         List<AdmobAdUnit> admobAdUnits = admobAdUnitDao.queryBuilder().where(AdmobAdUnitDao.Properties.Date.eq(date)).list();
         for (AdmobAdUnit adUnit : admobAdUnits) {
@@ -156,14 +141,17 @@ public class AdmobUtils {
         }
     }
 
-    public static Calendar getCalendar(String date){
-        Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(admobDateFormat.parse(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
+
+
+    public static void cleanUpDatabaseBefore(String date) {
+        List<AdmobDay> admobDays = admobDayDao.queryBuilder().where(AdmobDayDao.Properties.Date.lt(date)).list();
+        for (AdmobDay admobDay : admobDays) {
+            admobDayDao.delete(admobDay);
         }
-        return c;
+        List<AdmobAdUnit> admobAdUnits = admobAdUnitDao.queryBuilder().where(AdmobAdUnitDao.Properties.Date.lt(date)).list();
+        for (AdmobAdUnit adUnit : admobAdUnits) {
+            admobAdUnitDao.delete(adUnit);
+        }
     }
 
 }

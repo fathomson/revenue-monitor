@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Utils.startAllUpdateServices(MainActivity.this);
+        Utils.checkAndUpdateData(MainActivity.this);
 
 
     }
