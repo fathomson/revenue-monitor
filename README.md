@@ -1,6 +1,8 @@
 # Revenue Monitor
 Revenue monitor for developers
 
+Download: https://play.google.com/store/apps/details?id=sa.revenue
+
 Current advertisers:
 - Admob
 - Tapjoy
